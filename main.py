@@ -10,7 +10,7 @@ def run():  # 기능 선택
   
   banbok = True
   print('exit입력 : 프로그램 종료')
-  print('1 : 해야 할 일 작성 \n2 : 완료 표시 \n3 : 특정날짜 조회 \n4 : 해야 할 일 삭제 \n5 : 해야 할 일 수정')
+  print('1 : 해야 할 일 작성 \n2 : 전체 출력 \n3 : 특정날짜 todo출력 \n4 : 완료 표시 하기 \n5 : 삭제 하기')
   while(banbok):
     gineung_print = input()
     
@@ -26,10 +26,11 @@ def run():  # 기능 선택
       show_one_date_todo(cur)
       
     if gineung_print == '4':
-      print('해야 할 일 삭제')
-      
+      print('완료 표시 하기')
+      todo_check(cur, con)
     if gineung_print == '5':
-      print('해야 할 일 수정')
+      print('삭제 하기')
+      todo_delete(cur, con)
       
     if gineung_print == 'exit':
       print('프로그램을 종료 합니다 :D')
@@ -84,5 +85,29 @@ def show_one_date_todo(cur):
         print(data[0], data[1], data[2], data[3])
 
 
+def todo_check(cur, con):
+  print("완료 표시")
+  print("시퀀스 입력(가장 맨 앞에 있는 숫자)")
+  show_ToDo_list(cur, con)
+  
+  seq = input()
+  print(seq)
+  check = cur.execute(f"update todo set done = 1 where seq = {int(seq)}")
+  con.commit()
+  print('해당 시퀀스의 완료표시가 되었습니다')
+  
+  
+def todo_delete(cur, con):
+  show_ToDo_list(cur, con)
+  
+  print('삭제 할 목록의 시퀀스 입력')
+  print("시퀀스 입력(가장 맨 앞에 있는 숫자)")
+
+  delete_seq = input()
+  result = cur.execute(f"DELETE from todo where seq = {int(delete_seq)}")
+  con.commit()
+  print('해당 시퀀스가 삭제 되었습니다.')
+  
+  
 
 run()
