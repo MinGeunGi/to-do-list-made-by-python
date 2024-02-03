@@ -1,16 +1,36 @@
 import sqlite3
 from datetime import datetime
 
+'''
+유저 로그인
+아이디와 패스워드를 받고 로그인 시도
+로그인 정상 -> ture
+로그인 비정상 -> false
+'''
 
-def login():  # 유저 로그인 관리
+
+def login(con, cur):
+    
+    user_id = input('아이디 입력')
+    user_pw = input('pw입력')
+
+    result = cur.execute(
+        f"SELECT * FROM user where ID = '{user_id}' and pw = '{user_pw}'")
+    user = result.fetchall()
+    if len(user) == 0:
+        print('false')
+        return False
+    elif len(user) == 1:
+        print('true')
+        return True
+
+def sing_up(con, cur):  # 유저 로그인 관리
     user_name = input('유저 이름(선택) : ')
     user_ID = input('로그인 아이디(필수) :')
     user_pw = input('유저 비밀번호(필수)')
     user_gender = input('유저 성별(선택) : ')
     user_birthday = input('유저생일(선택) : ')
 
-    con = sqlite3.connect("todoDB.db")
-    cur = con.cursor()
     cur.execute(
         f"INSERT INTO user('name', 'ID', 'pw', 'gender', 'birthday') \
         VALUES('{user_name}', '{user_ID}', '{user_pw}', '{user_gender}', '{user_birthday}')"
@@ -23,6 +43,16 @@ def run():  # 기능 선택
     con = sqlite3.connect("todoDB.db")
     cur = con.cursor()
 
+    print('화원 가입(아이디 없을때) 1번 아이디가 있을때 2번')
+    print('아이디가 있을때 2번')
+    auth = input('항복을 선택 해 주세요')
+    if auth == '1':
+        sing_up(con, cur)
+    if auth == '2':
+        is_auth = login(cur)
+    if not is_auth:
+        print('로그인 실패로 인한 프로그램 종료')
+        return
     banbok = True
     print('exit입력 : 프로그램 종료')
     print('1 : 해야 할 일 작성 \n2 : 전체 출력 \n3 : 특정날짜 todo출력 \n4 : 완료 표시 하기 \n5 : 삭제 하기')
@@ -123,4 +153,5 @@ def todo_delete(cur, con):
 
 
 login()
-# run()
+sing_up()
+run()
