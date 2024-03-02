@@ -9,20 +9,22 @@ from datetime import datetime
 '''
 
 
-def login(con, cur):
-    
-    user_id = input('아이디 입력')
-    user_pw = input('pw입력')
+def login(cur):
+    user_id = input('아이디 입력: ')
+    user_pw = input('pw입력: ')
 
     result = cur.execute(
-        f"SELECT * FROM user where ID = '{user_id}' and pw = '{user_pw}'")
-    user = result.fetchall()
-    if len(user) == 0:
+        f"SELECT seq FROM user where ID = '{user_id}' and pw = '{user_pw}'")
+    user = result.fetchone()
+    # 로그인 성공시 : (2, )
+    #로그인 실패시 : None
+    if not user:
         print('false')
-        return False
-    elif len(user) == 1:
-        print('true')
-        return True
+        return -1
+    
+    print('true')
+    return user[0]
+
 
 def sing_up(con, cur):  # 유저 로그인 관리
     user_name = input('유저 이름(선택) : ')
@@ -39,21 +41,24 @@ def sing_up(con, cur):  # 유저 로그인 관리
 
 
 def run():  # 기능 선택
-
+    banbok = True
     con = sqlite3.connect("todoDB.db")
     cur = con.cursor()
-
+    is_auth = ""
+    
     print('화원 가입(아이디 없을때) 1번 아이디가 있을때 2번')
     print('아이디가 있을때 2번')
-    auth = input('항복을 선택 해 주세요')
+    auth = input('항목을 선택 해 주세요')
     if auth == '1':
         sing_up(con, cur)
+        return
     if auth == '2':
         is_auth = login(cur)
-    if not is_auth:
+    if is_auth == -1:
         print('로그인 실패로 인한 프로그램 종료')
         return
-    banbok = True
+
+    
     print('exit입력 : 프로그램 종료')
     print('1 : 해야 할 일 작성 \n2 : 전체 출력 \n3 : 특정날짜 todo출력 \n4 : 완료 표시 하기 \n5 : 삭제 하기')
     while (banbok):
@@ -152,6 +157,4 @@ def todo_delete(cur, con):
     print('해당 시퀀스가 삭제 되었습니다.')
 
 
-login()
-sing_up()
 run()
